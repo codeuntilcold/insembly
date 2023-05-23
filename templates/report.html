@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css')}}">
+</head>
+
+<body>
+    <div style="width: 80%; margin: auto;">
+        <div class="small-title" style="margin: 24px 0;">Báo cáo cho quy trình {{ id }}</div>
+        {% for entry in content %}
+        <div class="action-report 
+                    {% if entry.is_mistake %}mistake{% endif %}">
+            <div class="action">{{ entry.action_id }}</div>
+            <div class="start-time">{{ entry.start_time }}</div>
+            <div class="duration">{{ entry.duration }}s</div>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+
+</html>

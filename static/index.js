@@ -30,62 +30,136 @@ function createReportEntry(label, start, duration) {
     return htmlToElement(htmlString);
 }
 
-var prevLabel = "";
-var prevTime = Date.now();
-var accumulate = 0;
+function createWarningEntry(type, message) {
+    if (type == 'missing') {
+        return htmlToElement(
+            `<div class="process-error-missing">
+            Thiếu hành động: ${message}
+            </div>`
+        );
+    } else if (type == 'ordering') {
+        return htmlToElement(
+            `<div class="process-error-ordering">
+            Hành động lỗi: ${message}
+            </div>`
+        );
+    }
+}
 
-function updateTextStream(text) {
+function showTime() {
+    var date = new Date();
+    var h = date.getHours(); // 0 - 23
+    var m = date.getMinutes(); // 0 - 59
+    var s = date.getSeconds(); // 0 - 59
+
+    m = (m < 10) ? "0" + m : m;
+    s = (s < 10) ? "0" + s : s;
+
+    var time = h + ":" + m + ":" + s;
+    document.getElementById("clock_display").innerText = time;
+    document.getElementById("clock_display").textContent = time;
+
+    setTimeout(showTime, 1000);
+
+}
+showTime();
+
+
+function updateActionLogs(text) {
     const text_split = text.split(" ");
     const label = labels[parseInt(text_split[0])];
     const prob = text_split[1];
 
+    // Display logs
     const textStreamElement = document.querySelector('#action_stream');
     const div = document.createElement("pre");
     const textnode = document.createTextNode(label + ' ' + prob);
     div.appendChild(textnode)
     textStreamElement.appendChild(div);
-
     if (textStreamElement.childNodes.length > 10) {
         textStreamElement.removeChild(textStreamElement.childNodes[0]);
     }
 
+}
+
+const textStreamSource = new EventSource('/label_feed');
+textStreamSource.onmessage = function (event) {
+    updateActionLogs(event.data);
+};
+
+
+let prevLabel = "";
+let prevTime = Date.now();
+let accumulate = 0;
+let checked = [];
+function updateProcessReport(data) {
+    let label = labels[parseInt(data.label)]
+    let mistake = data.is_mistake ? "mistake" : "";
+
+    // Display label
     const labelElement = document.querySelector('#action');
     labelElement.innerHTML = label;
+
     const objectElement = document.querySelector('#object');
     const temp = label ? label.split(" ") : ["none"];
     objectElement.innerHTML = temp[temp.length - 1];
 
+    // Display action logs
     if (label && label !== prevLabel) {
-        if (prevLabel === "") {
+        if (prevLabel == "") {
             prevTime = Date.now();
         } else {
             const now = Date.now();
             const reportElement = document.querySelector('#report_stream');
             const dur = (now - prevTime) / 1000;
-            reportElement.appendChild(
-                createReportEntry(
-                    prevLabel,
-                    "",
-                    dur
-                )
-            );
+            if (prevLabel != "no action") {
+                reportElement.prepend(
+                    createReportEntry(
+                        prevLabel,
+                        mistake,
+                        dur
+                    )
+                );
+            }
             accumulate += dur;
             prevTime = now;
-            if (prevLabel == "put in instruction paper") {
-                reportElement.appendChild(
+            if (prevLabel == "close phone box") {
+                reportElement.prepend(
                     createReportEntry(
                         "Total",
                         "",
                         accumulate
                     )
                 );
+                if (checked.length < 11) {
+                    let noti = document.querySelector("#notification_area");
+                    let missing = Array(11).fill(0);
+                    checked.forEach(l => missing[l] = 1);
+                    for (const [index, element] of missing.entries()) {
+                        if (element == 0) {
+                            noti.appendChild(createWarningEntry("missing", labels[index]))
+                        }
+                    }
+                }
+                checked = [];
+                accumulate = 0;
+                prevLabel = "";
             }
         }
-        prevLabel = label;
+    }
+    prevLabel = label;
+    checked.push(data.label);
+
+    if (data.is_mistake) {
+        let noti = document.querySelector("#notification_area");
+        noti.appendChild(createWarningEntry("ordering", label))
     }
 }
 
-const textStreamSource = new EventSource('/label_feed');
-textStreamSource.onmessage = function (event) {
-    updateTextStream(event.data);
-};
+let socket = io();
+socket.on('connect', function () {
+    console.log('Connected to client!');
+});
+socket.on('state-changed', function (data) {
+    updateProcessReport(data)
+});

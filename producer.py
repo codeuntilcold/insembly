@@ -18,8 +18,8 @@ class Connector():
                       })
 
     def test_webcam_stream(self):
-        capture = cv2.VideoCapture('5_4_4.MOV')
-        f = open('5_4_4.txt', 'r')
+        capture = cv2.VideoCapture('8_1_3.MOV')
+        f = open('8_1_3.txt', 'r')
         lines = f.readlines()
         f.close()
         i = 0

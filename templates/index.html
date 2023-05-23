@@ -1,9 +1,18 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Insembly</title>
+
   <link href="https://fonts.googleapis.com/css?family=Mulish:300,400,500" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css')}}">
   <script src="{{ url_for('static', filename='index.js') }}" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"
+    integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA=="
+    crossorigin="anonymous"></script>
 </head>
 
 <body>
@@ -15,7 +24,10 @@
     <div class="main-container">
       <div class="detection-container">
         <div class="camera">
-          <div class="small-title">Video</div>
+          <div class="small-title-container">
+            <div class="small-title">Video</div>
+            <div id="clock_display" class="small-title clock" onload="showTime()"></div>
+          </div>
           <img src="{{ url_for('video_feed') }}" alt="Camera feed">
         </div>
 
@@ -40,21 +52,15 @@
 
       <div class="report-container">
         <div class="process-report-container">
-          <div style="display:flex; align-items:center;justify-content:space-between;">
+          <div class="small-title-container">
             <div class="small-title">Lịch sử hành động</div>
             <a href="/report">Toàn bộ</a>
           </div>
           <div class="process-report" id="report_stream"></div>
         </div>
 
-        <div class="process-report-error-container">
+        <div class="process-report-error-container" id="notification_area">
           <div class="small-title">Thông báo</div>
-          <div class="process-error-missing">
-            Thiếu hành động: put in instruction paper
-          </div>
-          <div class="process-error-ordering">
-            Hành động lỗi: close phone box
-          </div>
         </div>
       </div>
     </div>

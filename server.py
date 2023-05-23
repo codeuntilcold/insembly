@@ -1,26 +1,23 @@
+from dataclasses import dataclass
 from flask import Flask, jsonify, request
+import requests
 import logging
 from action_transition_graph.graph import Bucket, TransitionGraph  # noqa: E402
 
+
+@dataclass
+class AppState:
+    label: int
+    prob: float
+    image: str
+
+
 app = Flask(__name__)
-app.logger.setLevel("ERROR")
-logging.getLogger('werkzeug').setLevel(logging.ERROR)
+# app.logger.setLevel("ERROR")
+# logging.getLogger('werkzeug').setLevel(logging.ERROR)
 
-state = {
-    "label": "-1",
-    "prob" : "0.0",
-    "image" : ""
-}
-
-
-def gen():
-    global state
-    while True:
-        message = f"{state['label']} {state['prob']}"
-        yield message
-
-
-bucket = Bucket(stream=gen(), radius=16)
+state = AppState(-1, 0.0, "")
+bucket = Bucket(stream=None, radius=16)
 graph = TransitionGraph(hardcode_graph=False, save_report_as_files=True)
 
 
@@ -30,30 +27,28 @@ def sendframe():
     data = request.get_json()
 
     new_state, prev_conf, conf = bucket.drip(data['data'])
-    app.logger.error(f"RECEIVED: {new_state}")
+    result = graph.update_state(new_state, prev_conf)
 
-    curstate = graph.update_state(new_state, prev_conf)
-    app.logger.error(f"CURRENT: {curstate}")
+    if result.has_changed:
+        requests.post('http://127.0.0.1:5000/state-changed', json={
+            'label': result.state,
+            'is_mistake': result.is_mistake
+        })
 
-    state['label'], state['prob'] = str(curstate), str(conf)
-    state['image'] = data["image"]
-
-    # app.logger.info(state['label'])
-    # app.logger.info(state['prob'])
-
+    state.state = new_state
+    state.prob = conf
+    state.image = data['image']
     return jsonify(success=True)
 
 
 @app.route('/frame')
 def frame():
-    global state
-    return jsonify(frame=state["image"])
+    return jsonify(frame=state.image)
 
 
 @app.route('/label')
 def label():
-    global state
-    return jsonify(label=state['label'], prob=state['prob'])
+    return jsonify(label=state.label, prob=state.prob)
 
 
 if __name__ == '__main__':

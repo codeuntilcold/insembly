@@ -15,7 +15,7 @@
     display: flex;
     align-items: center;
     justify-content: space-around;
-    height: 80px;
+    height: 4rem;
     background-color: #F5F5F5;
     padding: 10px;
 }
@@ -23,6 +23,18 @@
 .header-text {
     width: fit-content;
     font-size: large;
+}
+
+.footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    position: relative;
+    bottom: 0;
+    height: 4rem;
+    width: 100%;
+    margin-top:auto;
+    background-color: #f5f5f5;
 }
 
 .main-container {
@@ -44,6 +56,12 @@
     .report-container {
         width: 100%;
     }
+}
+
+.small-title-container {
+    display: flex; 
+    align-items: center;
+    justify-content: space-between;
 }
 
 .small-title {
@@ -69,6 +87,7 @@ DETECTION SECTION
 
 .camera {
     width: 90%;
+    min-height: 400px;
     padding: 12px;
 }
 
@@ -145,24 +164,35 @@ REPORT SECTION
     padding: 24px;
 }
 
+.process-report-container {
+
+}
+
 .process-report {
     display: flex;
     flex-direction: column;
     align-items: start;
-    min-height: 150px;
+    flex-flow: column nowrap;
+    height: 300px;
     width: 100%;
     overflow: hidden;
     resize: vertical;
+    overflow-y: auto;
 }
 
 .action-report {
+    flex: 0 0 52px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     width: 100%;
     height: 52px;
     border-top: 1px solid #d0d0d0;
-    overflow-y: auto;
+    padding: 0 8px;
+}
+
+.mistake {
+    background-color: #FFCDD2;
 }
 
 .action {
@@ -196,16 +226,4 @@ REPORT SECTION
 .process-error-ordering {
     background-color: #FDD835;
 
-}
-
-.footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    position: relative;
-    bottom: 0;
-    height: 80px;
-    width: 100%;
-    margin-top:auto;
-    background-color: #f5f5f5;
 }
