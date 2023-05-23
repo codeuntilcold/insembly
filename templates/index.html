@@ -1,0 +1,68 @@
+<html>
+
+<head>
+  <link href="https://fonts.googleapis.com/css?family=Mulish:300,400,500" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css')}}">
+  <script src="{{ url_for('static', filename='index.js') }}" defer></script>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="header-text">[INSEMBLY] Giám sát đóng gói hộp điện thoại</div>
+    </div>
+
+    <div class="main-container">
+      <div class="detection-container">
+        <div class="camera">
+          <div class="small-title">Video</div>
+          <img src="{{ url_for('video_feed') }}" alt="Camera feed">
+        </div>
+
+        <div class="detection-info">
+          <div class="detection-current">
+            <div>
+              <div class="small-title">Hành động</div>
+              <div class="action-current" id="action"></div>
+            </div>
+
+            <div>
+              <div class="small-title">Vật thể</div>
+              <div class="object-current" id="object"></div>
+            </div>
+          </div>
+
+          <div class="action-logs">
+            <div class="raw-logs" id="action_stream"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="report-container">
+        <div class="process-report-container">
+          <div style="display:flex; align-items:center;justify-content:space-between;">
+            <div class="small-title">Lịch sử hành động</div>
+            <a href="/report">Toàn bộ</a>
+          </div>
+          <div class="process-report" id="report_stream"></div>
+        </div>
+
+        <div class="process-report-error-container">
+          <div class="small-title">Thông báo</div>
+          <div class="process-error-missing">
+            Thiếu hành động: put in instruction paper
+          </div>
+          <div class="process-error-ordering">
+            Hành động lỗi: close phone box
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      Thesis - Second semester 2022-2023
+    </div>
+  </div>
+</body>
+
+</html>

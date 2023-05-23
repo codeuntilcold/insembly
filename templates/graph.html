@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Weighted Directed Graph</title>
+  <style>
+    #cy {
+      width: 100%;
+      height: 800px;
+    }
+  </style>
+  <script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
+</head>
+
+<body>
+  <div id="cy"></div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var cy = cytoscape({
+        container: document.getElementById('cy'),
+        elements: [
+          { data: { id: '0', label: 'open phone box' } },
+          { data: { id: '1', label: 'take out phone' } },
+          { data: { id: '2', label: 'take out instruction paper' } },
+          { data: { id: '3', label: 'take out earphones' } },
+          { data: { id: '4', label: 'take out charger' } },
+          { data: { id: '5', label: 'put in charger' } },
+          { data: { id: '6', label: 'put in earphones' } },
+          { data: { id: '7', label: 'put in instruction paper' } },
+          { data: { id: '8', label: 'inspect phone' } },
+          { data: { id: '9', label: 'put in phone' } },
+          { data: { id: '10', label: 'close phone box' } },
+          { data: { id: '11', label: 'no action' } },
+          { data: { source: '0', target: '1', weight: 1, prob: 0.5 } },
+          { data: { source: '0', target: '2', weight: 1, prob: 0.5 } },
+          { data: { source: '1', target: '2', weight: 1, prob: 0.33 } },
+          { data: { source: '1', target: '3', weight: 1, prob: 0.33 } },
+          { data: { source: '1', target: '4', weight: 1, prob: 0.33 } },
+          { data: { source: '2', target: '1', weight: 1, prob: 0.33 } },
+          { data: { source: '2', target: '3', weight: 1, prob: 0.33 } },
+          { data: { source: '2', target: '4', weight: 1, prob: 0.33 } },
+          { data: { source: '3', target: '4', weight: 1, prob: 0.33 } },
+          { data: { source: '3', target: '5', weight: 1, prob: 0.33 } },
+          { data: { source: '3', target: '6', weight: 1, prob: 0.33 } },
+          { data: { source: '4', target: '3', weight: 1, prob: 0.33 } },
+          { data: { source: '4', target: '5', weight: 1, prob: 0.33 } },
+          { data: { source: '4', target: '6', weight: 1, prob: 0.33 } },
+          { data: { source: '5', target: '6', weight: 1, prob: 0.33 } },
+          { data: { source: '5', target: '7', weight: 1, prob: 0.33 } },
+          { data: { source: '5', target: '8', weight: 1, prob: 0.33 } },
+          { data: { source: '6', target: '5', weight: 1, prob: 0.33 } },
+          { data: { source: '6', target: '7', weight: 1, prob: 0.33 } },
+          { data: { source: '6', target: '8', weight: 1, prob: 0.33 } },
+          { data: { source: '7', target: '8', weight: 1, prob: 0.5 } },
+          { data: { source: '7', target: '10', weight: 1, prob: 0.5 } },
+          { data: { source: '8', target: '9', weight: 1, prob: 0.99 } },
+          { data: { source: '9', target: '7', weight: 1, prob: 0.5 } },
+          { data: { source: '9', target: '10', weight: 1, prob: 0.5 } }
+        ],
+        style: [
+          {
+            selector: 'node',
+            style: {
+              'background-color': '#e0b0ff',
+              'label': 'data(label)',
+              'width': '120px',
+              'height': '50px',
+              'border-width': '2px',
+              'border-color': '#888',
+              'border-opacity': '1',
+              'text-valign': 'center',
+              'text-halign': 'center',
+              'font-size': '14px',
+              'font-weight': 'bold'
+            }
+          },
+          {
+            selector: 'edge',
+            style: {
+              'curve-style': 'unbundled-bezier',
+              'target-arrow-shape': 'triangle',
+              'width': '2px',
+              'line-color': '#888',
+              'target-arrow-color': '#888'
+            }
+          },
+          {
+            selector: '.highlighted',
+            style: {
+              'background-color': '#ffd6ff',
+              'border-color': '#ff00cc',
+              'line-color': '#ff00cc',
+              'target-arrow-color': '#ff00cc'
+            }
+          }
+        ],
+        layout: {
+          name: 'circle'
+        }
+      });
+
+      // Add click event listener to nodes
+      cy.on('tap', 'node', function (event) {
+        var node = event.target;
+        var selectedNodeId = node.id();
+
+        // Remove highlight from all nodes
+        cy.elements().removeClass('highlighted');
+
+        // Add highlight to the clicked node
+        node.addClass('highlighted');
+
+        // Animate transition by zooming in on the clicked node
+        cy.animate({
+          fit: {
+            eles: node,
+            padding: 50
+          },
+          duration: 500
+        });
+      });
+    });
+  </script>
+</body>
+
+</html>
