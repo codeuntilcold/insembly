@@ -12,6 +12,13 @@ const labels = [
     "close phone box",
     "no action"
 ];
+const objects = [
+    "phonebox",
+    "phone",
+    "not phone",
+    "not phone box",
+    "both phone and phonebox"
+];
 
 function htmlToElement(html) {
     var template = document.createElement('template');
@@ -67,19 +74,22 @@ showTime();
 
 function updateActionLogs(text) {
     const text_split = text.split(" ");
-    const label = labels[parseInt(text_split[0])];
+    const action = labels[parseInt(text_split[0])];
     const prob = text_split[1];
+    const object = text_split[2];
 
     // Display logs
     const textStreamElement = document.querySelector('#action_stream');
     const div = document.createElement("pre");
-    const textnode = document.createTextNode(label + ' ' + prob);
+    const textnode = document.createTextNode(action + ' ' + prob);
     div.appendChild(textnode)
     textStreamElement.appendChild(div);
     if (textStreamElement.childNodes.length > 10) {
         textStreamElement.removeChild(textStreamElement.childNodes[0]);
     }
 
+    const objectElement = document.querySelector('#object');
+    objectElement.innerHTML = objects[parseInt(object)];
 }
 
 const textStreamSource = new EventSource('/label_feed');
@@ -99,10 +109,6 @@ function updateProcessReport(data) {
     // Display label
     const labelElement = document.querySelector('#action');
     labelElement.innerHTML = label;
-
-    const objectElement = document.querySelector('#object');
-    const temp = label ? label.split(" ") : ["none"];
-    objectElement.innerHTML = temp[temp.length - 1];
 
     // Display action logs
     if (label && label !== prevLabel) {
@@ -163,3 +169,6 @@ socket.on('connect', function () {
 socket.on('state-changed', function (data) {
     updateProcessReport(data)
 });
+// socket.on('add-log', function (data) {
+//     updateActionLogs(data)
+// })

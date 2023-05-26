@@ -10,16 +10,24 @@
 </head>
 
 <body>
-    <div style="width: 80%; margin: auto;">
-        <div class="small-title" style="margin: 24px 0;">Báo cáo cho quy trình {{ id }}</div>
-        {% for entry in content %}
-        <div class="action-report 
-                    {% if entry.is_mistake %}mistake{% endif %}">
-            <div class="action">{{ entry.action_id }}</div>
-            <div class="start-time">{{ entry.start_time }}</div>
-            <div class="duration">{{ entry.duration }}s</div>
+    <div class="container">
+        <div class="header">
+          <div class="header-text">[INSEMBLY] Giám sát đóng gói hộp điện thoại</div>
         </div>
-        {% endfor %}
+        <div style="width: 80%; margin: auto;">
+            <div class="small-title" style="margin: 24px 0;">Báo cáo cho quy trình {{ id }}</div>
+            {% for entry in content %}
+            <div class="action-report 
+                        {% if entry.is_mistake %}mistake{% endif %}">
+                <div class="action">{{ entry.action_name }}</div>
+                <div class="start-time">{{ entry.start_time }}</div>
+                <div class="duration">{{ entry.duration }}s</div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="footer">
+          Thesis - Second semester 2022-2023
+        </div>
     </div>
 </body>
 

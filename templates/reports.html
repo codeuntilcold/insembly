@@ -10,13 +10,21 @@
 </head>
 
 <body>
-    <div style="width: 80%; margin: auto;">
-        <div class="small-title" style="margin: 24px 0;">Tất cả báo cáo quy trình</div>
-        {% for file in files %}
-        <div style="margin: 12px 0;">
-            <a href="/report/{{ file }}" style="font-size: 18px;">{{ file }}</a>
+    <div class="container">
+        <div class="header">
+          <div class="header-text">[INSEMBLY] Giám sát đóng gói hộp điện thoại</div>
         </div>
-        {% endfor %}
+        <div style="width: 80%; margin: auto;">
+            <div class="small-title" style="margin: 24px 0;">Tất cả báo cáo quy trình</div>
+            {% for file in files %}
+            <div style="margin: 12px 0;">
+                <a href="/report/{{ file }}" style="font-size: 18px;">{{ file }}</a>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="footer">
+          Thesis - Second semester 2022-2023
+        </div>
     </div>
 </body>
 

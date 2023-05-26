@@ -1,4 +1,4 @@
-from flask import Flask, render_template, Response, request
+from flask import Flask, render_template, Response, request, jsonify
 import requests
 import base64
 import time
@@ -6,11 +6,25 @@ import os
 import json
 from flask_socketio import SocketIO
 
+ACTIONS = [
+    "open phone box",
+    "take out phone",
+    "take out instruction paper",
+    "take out earphones",
+    "take out charger",
+    "put in charger",
+    "put in earphones",
+    "put in instruction paper",
+    "inspect phone",
+    "put in phone",
+    "close phone box",
+    "no action"   
+]
+FPS = 24.0
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
-
-total_pixel_count = 0
 
 
 @app.route('/')
@@ -30,6 +44,8 @@ def each_report(id):
     with open(f'report/{id}.txt', 'r') as f:
         content = f.read()
         content = json.loads(content)
+        for action in content['report']:
+            action['action_name'] = ACTIONS[action['action_id']]
         return render_template('report.html', content=content['report'], id=id)
 
 
@@ -54,7 +70,7 @@ def get_frame():
             jpeg_original = b''
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + jpeg_original + b'\r\n')
-        time.sleep(1 / 24.0)
+        time.sleep(1 / FPS)
 
 
 @app.route('/label_feed', methods=['GET'])
@@ -66,18 +82,26 @@ def get_label():
     while True:
         try:
             response_c = requests.get('http://127.0.0.1:5001/label')
-            label = bytes(str(response_c.json()['label']), encoding='utf-8')
+            action = bytes(str(response_c.json()['action']), encoding='utf-8')
             prob = bytes(str(response_c.json()['prob']), encoding='utf-8')
+            object = bytes(str(response_c.json()['object']), encoding='utf-8')
         except Exception as e:
             app.logger.error(e)
-            label, prob = b'11', b'0.0'
-        yield b'data: ' + label + b' ' + prob + b'\n\n'
-        time.sleep(1 / 24.0)
+            action, prob, object = b'11', b'0.0', b'-1'
+        yield b'data: ' + action + b' ' + prob + b' ' + object + b'\n\n'
+        time.sleep(1 / FPS)
 
 
 @app.route('/state-changed', methods=['POST'])
 def state_changed():
     socketio.emit('state-changed', request.get_json())
+    return jsonify(success=True)
+
+
+@app.route('/log', methods=['POST'])
+def add_log():
+    socketio.emit('add-log', request.get_json())
+    return jsonify(success=True)
 
 
 if __name__ == '__main__':
