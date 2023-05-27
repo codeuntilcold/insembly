@@ -89,7 +89,7 @@ function updateActionLogs(text) {
     }
 
     const objectElement = document.querySelector('#object');
-    objectElement.innerHTML = objects[parseInt(object)];
+    objectElement.innerHTML = object //[parseInt(object)];
 }
 
 const textStreamSource = new EventSource('/label_feed');

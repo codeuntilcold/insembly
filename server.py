@@ -45,10 +45,11 @@ def sendframe():
     #     'prob': conf
     # })
 
-    state.action = new_state
-    state.prob = conf
+    raw_data = data['data'].split(' ')
+    state.action = int(raw_data[0])
+    state.prob = float(raw_data[1])
     state.image = data['image']
-    state.object = data['object'].split()[0]
+    state.object = data['object'].split("@")[0]
     return jsonify(success=True)
 
 

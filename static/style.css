@@ -97,6 +97,7 @@ DETECTION SECTION
     max-height: 100%;
     margin-right: 24px;
     border-radius: 16px;
+    aspect-ratio: 16 / 9;
 }
 
 .detection-info {
@@ -151,6 +152,7 @@ DETECTION SECTION
 
 .raw-logs pre {
     font-family: monospace;
+    font-size: 14px;
 }
 
 /*
@@ -208,6 +210,7 @@ REPORT SECTION
 }
 
 .process-report-error-container {
+    height: 100px;
 }
 
 .process-error-missing, .process-error-ordering {
@@ -220,6 +223,7 @@ REPORT SECTION
 }
 
 .process-error-missing {
+    color: white;
     background-color: #E53935;
 }
 
