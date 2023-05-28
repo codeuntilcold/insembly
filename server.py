@@ -2,6 +2,8 @@ from dataclasses import dataclass
 from flask import Flask, jsonify, request
 import requests
 import logging
+import sys
+sys.path.append("D:\\Study document\\Luận văn\\tsn-online-demo")
 from action_transition_graph.graph import Bucket, TransitionGraph  # noqa: E402
 
 
@@ -18,8 +20,8 @@ app.logger.setLevel("ERROR")
 logging.getLogger('werkzeug').setLevel(logging.ERROR)
 
 state = AppState(-1, 0.0, "", -1)
-bucket = Bucket(stream=None, radius=16)
-graph = TransitionGraph(hardcode_graph=False, save_report_as_files=True)
+bucket = Bucket(stream=None, radius=8)
+graph = TransitionGraph(hardcode_graph=True, save_report_as_files=True)
 
 
 @app.route('/send-frame', methods=['POST'])
