@@ -97,6 +97,10 @@ def state_changed():
     socketio.emit('state-changed', request.get_json())
     return jsonify(success=True)
 
+@app.route('/missed-actions', methods=['POST'])
+def missed_actions():
+    socketio.emit('missed-actions', request.get_json())
+    return jsonify(success=True)
 
 @app.route('/log', methods=['POST'])
 def add_log():

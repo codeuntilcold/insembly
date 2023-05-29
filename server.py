@@ -41,6 +41,11 @@ def sendframe():
             'label': result.state,
             'is_mistake': result.is_mistake
         })
+
+        if result.is_mistake and len(result.missed_steps):
+            requests.post('http://127.0.0.1:5000/missed-actions', json={
+                'actions': list(result.missed_steps)
+            })
     
     # requests.post('http://127.0.0.1:5000/log', json={
     #     'state': new_state,

@@ -15,9 +15,8 @@
     display: flex;
     align-items: center;
     justify-content: space-around;
-    height: 4rem;
     background-color: #F5F5F5;
-    padding: 10px;
+    padding: 1.5rem;
 }
 
 .header-text {
@@ -31,9 +30,10 @@
     justify-content: space-around;
     position: relative;
     bottom: 0;
-    height: 4rem;
+    margin-bottom: 0; 
+    padding: 1.5rem;
     width: 100%;
-    margin-top:auto;
+    margin-top: auto;
     background-color: #f5f5f5;
 }
 
@@ -79,10 +79,17 @@ DETECTION SECTION
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: start;
     padding: 12px;
     height: 100%;
     width: 60%;
+    margin-bottom: 36px;
+}
+
+@media screen and (max-width: 992px) {
+    .detection-container {
+        width: 100%;
+    }
 }
 
 .camera {
@@ -92,12 +99,11 @@ DETECTION SECTION
 }
 
 .camera img {
-    max-width: 800px;
     width: 100%;
     max-height: 100%;
-    margin-right: 24px;
     border-radius: 16px;
     aspect-ratio: 16 / 9;
+    margin: auto;
 }
 
 .detection-info {
@@ -134,7 +140,7 @@ DETECTION SECTION
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
-    height: 100%;
+    height: fit-content;
     width: 100%;
 }
 
@@ -143,7 +149,7 @@ DETECTION SECTION
     flex-direction: column;
     align-items:start;
     justify-content: center;
-    height: 12em;
+    height: 14em;
     width: 100%;
     background-color: #f5f5f5;
     border-radius: 16px;
@@ -164,6 +170,12 @@ REPORT SECTION
 .report-container {
     width: 40%;
     padding: 24px;
+}
+
+@media screen and (max-width: 992px) {
+    .report-container {
+        width: 100%;
+    }
 }
 
 .process-report-container {
@@ -210,7 +222,12 @@ REPORT SECTION
 }
 
 .process-report-error-container {
-    height: 100px;
+    margin-top: 36px;
+    height: 400px;
+}
+
+.process-report-error {
+    overflow-y: auto;
 }
 
 .process-error-missing, .process-error-ordering {

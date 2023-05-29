@@ -9,10 +9,8 @@
 
   <link href="https://fonts.googleapis.com/css?family=Mulish:300,400,500" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css')}}">
+  <script src="{{ url_for('static', filename='socket.io.js') }}" defer></script>
   <script src="{{ url_for('static', filename='index.js') }}" defer></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"
-    integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA=="
-    crossorigin="anonymous"></script>
 </head>
 
 <body>
@@ -59,8 +57,12 @@
           <div class="process-report" id="report_stream"></div>
         </div>
 
-        <div class="process-report-error-container" id="notification_area">
-          <div class="small-title">Thông báo</div>
+        <div class="process-report-error-container">
+          <div class="small-title-container">
+            <div class="small-title">Thông báo</div>
+            <button onclick="clearNotification()">Xóa</button>
+          </div>
+          <div class="process-report-error" id="notification_area"></div>
         </div>
       </div>
     </div>

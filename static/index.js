@@ -27,9 +27,9 @@ function htmlToElement(html) {
     return template.content.firstChild;
 }
 
-function createReportEntry(label, start, duration) {
+function createReportEntry(label, start, duration, is_mistake) {
     const htmlString = `
-    <div class="action-report">
+    <div class="action-report ${is_mistake ? 'mistake' : ''}">
         <div class="action">${label}</div>
         <div class="start-time">${start}</div>
         <div class="duration">${duration}s</div>
@@ -58,16 +58,12 @@ function showTime() {
     var h = date.getHours(); // 0 - 23
     var m = date.getMinutes(); // 0 - 59
     var s = date.getSeconds(); // 0 - 59
-
     m = (m < 10) ? "0" + m : m;
     s = (s < 10) ? "0" + s : s;
-
     var time = h + ":" + m + ":" + s;
     document.getElementById("clock_display").innerText = time;
     document.getElementById("clock_display").textContent = time;
-
     setTimeout(showTime, 1000);
-
 }
 showTime();
 
@@ -98,63 +94,39 @@ textStreamSource.onmessage = function (event) {
 };
 
 
-let prevLabel = "";
+let prevLabel = "no action";
 let prevTime = Date.now();
 let accumulate = 0;
-let checked = [];
 function updateProcessReport(data) {
-    let label = labels[parseInt(data.label)]
-    let mistake = data.is_mistake ? "mistake" : "";
+    let label = labels[parseInt(data.label)];
+    label = label ? label : "no action";
+    if (label == prevLabel) {
+        return;
+    }
 
-    // Display label
     const labelElement = document.querySelector('#action');
     labelElement.innerHTML = label;
 
-    // Display action logs
-    if (label && label !== prevLabel) {
-        if (prevLabel == "") {
-            prevTime = Date.now();
-        } else {
-            const now = Date.now();
-            const reportElement = document.querySelector('#report_stream');
-            const dur = (now - prevTime) / 1000;
-            if (prevLabel != "no action") {
-                reportElement.prepend(
-                    createReportEntry(
-                        prevLabel,
-                        mistake,
-                        dur
-                    )
-                );
-            }
-            accumulate += dur;
-            prevTime = now;
-            if (prevLabel == "close phone box") {
-                reportElement.prepend(
-                    createReportEntry(
-                        "Total",
-                        "",
-                        accumulate
-                    )
-                );
-                if (checked.length < 11) {
-                    let noti = document.querySelector("#notification_area");
-                    let missing = Array(11).fill(0);
-                    checked.forEach(l => missing[l] = 1);
-                    for (const [index, element] of missing.entries()) {
-                        if (element == 0) {
-                            noti.appendChild(createWarningEntry("missing", labels[index]))
-                        }
-                    }
-                }
-                checked = [];
-                accumulate = 0;
-                prevLabel = "";
-            }
-        }
+    const reportElement = document.querySelector('#report_stream');
+    const lastElementTime = reportElement.children[0]?.querySelector(".duration");
+    const now = Date.now();
+    const dur = (now - prevTime) / 1000;
+
+    if (lastElementTime) {
+        lastElementTime.innerHTML = dur + "s";
     }
+    if (prevLabel == "no action") {
+        reportElement.prepend(createReportEntry(label, "", "...", data.is_mistake));
+        accumulate += dur;
+    } else if (prevLabel != "close phone box") {
+        reportElement.prepend(createReportEntry(label, "", "...", data.is_mistake));
+        accumulate += dur;
+    } else {
+        reportElement.prepend(createReportEntry("Total", "", accumulate, false));
+        accumulate = 0;
+    }
+    prevTime = now;
     prevLabel = label;
-    checked.push(data.label);
 
     if (data.is_mistake) {
         let noti = document.querySelector("#notification_area");
@@ -162,13 +134,37 @@ function updateProcessReport(data) {
     }
 }
 
+
+function clearNotification() {
+    let target = document.querySelector("#notification_area");
+    while (target.hasChildNodes()) {
+        target.removeChild(target.firstChild);
+    }
+}
+
+
+function notifyMissingActions(data) {
+    // if (checked.length < 11) {
+    //     let noti = document.querySelector("#notification_area");
+    //     let missing = Array(11).fill(0);
+    //     checked.forEach(l => missing[l] = 1);
+    //     for (const [index, element] of missing.entries()) {
+    //         if (element == 0) {
+    //             noti.appendChild(createWarningEntry("missing", labels[index]))
+    //         }
+    //     }
+    // }
+    let noti = document.querySelector("#notification_area");
+    for (const node of noti.querySelectorAll(".process-error-missing")) {
+        noti.removeChild(node);
+    };
+    for (const action of data.actions) {
+        noti.appendChild(createWarningEntry("missing", labels[action]))
+    }
+}
+
+
 let socket = io();
-socket.on('connect', function () {
-    console.log('Connected to client!');
-});
-socket.on('state-changed', function (data) {
-    updateProcessReport(data)
-});
-// socket.on('add-log', function (data) {
-//     updateActionLogs(data)
-// })
+socket.on('connect', () => console.log('Connected to client!'));
+socket.on('state-changed', updateProcessReport);
+socket.on('missed-actions', notifyMissingActions);
